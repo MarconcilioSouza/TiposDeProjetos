@@ -1,0 +1,57 @@
+{
+  "inputs": [
+    {
+      "type": "Microsoft.Extensions.Logging"
+    }
+  ],
+  "outputs": [
+    {
+      "type": "SqlTableOutput",
+      "connectionStringName": "ConectSysConnStr",
+      "logTableName": "Log",
+
+      "sqlColumnTypes:LogId": "Int", //Since this is an IDENTITY column, it shouldn't be passed as a parameter
+      "sqlColumnTypes:Date": "DateTime",
+      "sqlColumnTypes:Exception": "Text:4000",
+      "sqlColumnTypes:Level": "NVarChar:510",
+      "sqlColumnTypes:Logger": "NVarChar:510",
+      "sqlColumnTypes:Message": "Text:4000",
+      "sqlColumnTypes:ServiceName": "NVarChar:1020",
+      "sqlColumnTypes:Thread": "NVarChar:510",
+
+      "columnMappings:Date": "LogDate",
+      "columnMappings:Exception": "ExceptionDescription",
+      "columnMappings:Level": "Level",
+      "columnMappings:Logger": "LoggerClassName",
+      "columnMappings:Message": "LogMessage",
+
+      "customColumnMappings:ServiceName": "ProcessID",
+      "customColumnMappings:Thread": "TaskID"
+    },
+    {
+      "type": "StdOutput"
+    }
+  ],
+  "schemaVersion": "2016-08-11",
+  "settings": {
+    "pipelineBufferSize": "1000",
+    "maxEventBatchSize": "50",
+    "maxBatchDelayMsec": "500",
+    "maxConcurrency": "10",
+    "pipelineCompletionTimeoutMsec": "20000"
+  },
+  "healthReporter": {
+    "type": "CsvHealthReporter",
+    "logFileFolder": ".",
+    "logFilePrefix": "EventFlow_HealthReport",
+    "minReportLevel": "Message", // Message = Verbose, Warning, Error - default is Warning
+    "throttlingPeriodMsec": "1000"
+  },
+  "extensions": [
+    {
+      "category": "outputFactory",
+      "type": "SqlTableOutput",
+      "qualifiedTypeName": "Microsoft.Diagnostics.EventFlow.Outputs.SqlTableOutputFactory, Microsoft.Diagnostics.EventFlow.Outputs.SqlTable"
+    }
+  ]
+}
